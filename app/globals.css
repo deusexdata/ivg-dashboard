@@ -7,14 +7,14 @@
 ================================ */
 
 html, body {
-  background: #0b0f14;
-  color: #e5e7eb;
+  background: #070b14;
+  color: #dbeafe;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   min-height: 100%;
 }
 
 /* ================================
-   MATRIX GRID BACKGROUND
+   BLUE MATRIX GRID
 ================================ */
 
 body::before {
@@ -22,15 +22,15 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(34,211,238,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34,211,238,0.06) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(rgba(34,211,238,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
   pointer-events: none;
   z-index: 0;
 }
 
 /* ================================
-   SCANLINE EFFECT
+   TERMINAL SCANLINE (SUBTLE)
 ================================ */
 
 .scanline {
@@ -38,112 +38,68 @@ body::before {
   inset: 0;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(57,255,20,0.05),
-    rgba(57,255,20,0.05) 1px,
+    rgba(56,189,248,0.05),
+    rgba(56,189,248,0.05) 1px,
     transparent 1px,
     transparent 3px
   );
-  mix-blend-mode: overlay;
+  animation: scan 12s linear infinite;
   pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+@keyframes scan {
+  from { background-position-y: 0; }
+  to { background-position-y: 100%; }
 }
 
 /* ================================
-   NEON GLOW
+   NEON / HUD GLOW (BLUE)
 ================================ */
 
 .neon {
   text-shadow:
-    0 0 4px rgba(57,255,20,0.6),
-    0 0 12px rgba(57,255,20,0.35),
-    0 0 24px rgba(57,255,20,0.15);
+    0 0 4px rgba(56,189,248,0.7),
+    0 0 12px rgba(56,189,248,0.4),
+    0 0 24px rgba(56,189,248,0.2);
 }
 
 /* ================================
-   TERMINAL PANELS
+   TERMINAL PANELS (SCREENS)
 ================================ */
 
 .panel {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(34, 211, 238, 0.35);
+  background: rgba(8, 15, 32, 0.9);
+  border: 1px solid rgba(56,189,248,0.45);
   box-shadow:
-    inset 0 0 0 1px rgba(34,211,238,0.15),
-    0 0 24px rgba(0,0,0,0.6);
-  border-radius: 14px;
+    inset 0 0 0 1px rgba(56,189,248,0.18),
+    0 0 28px rgba(0,0,0,0.7);
+  border-radius: 10px;
   position: relative;
   overflow: hidden;
 }
 
 /* ================================
-   STAT ROWS
+   STAT ROWS (HUD STYLE)
 ================================ */
 
 .stat-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 6px 0;
-  border-bottom: 1px solid rgba(34,211,238,0.15);
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(56,189,248,0.25);
 }
 
 .stat-label {
-  color: #64748b;
+  color: #94a3b8;
 }
 
 .stat-value {
-  color: #22c55e;
+  color: #22d3ee;
   font-weight: 600;
 }
 
 .stat-highlight {
-  color: #39ff14;
-}
-
-/* ================================
-   TERMINAL UX ENHANCEMENTS
-================================ */
-
-.terminal {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  letter-spacing: 0.02em;
-}
-
-.prompt::before {
-  content: "> ";
-  color: #39ff14;
-}
-
-.divider {
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(34,211,238,0.4),
-    transparent
-  );
-  margin: 12px 0;
-}
-
-/* Click-to-copy */
-.copy {
-  cursor: pointer;
-  position: relative;
-}
-
-.copy:hover {
-  color: #39ff14;
-}
-
-.copy::after {
-  content: "copied";
-  position: absolute;
-  right: -48px;
-  top: 0;
-  font-size: 10px;
-  color: #39ff14;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.copy:active::after {
-  opacity: 1;
+  color: #38bdf8;
 }
