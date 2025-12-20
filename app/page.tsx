@@ -24,7 +24,9 @@ type DexPair = {
 };
 
 const fmtUsd = (n?: number) =>
-  typeof n === "number" ? `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : "—";
+  typeof n === "number"
+    ? `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+    : "—";
 
 const fmtNum = (n?: number, d = 2) =>
   typeof n === "number" ? n.toFixed(d) : "—";
@@ -44,7 +46,7 @@ export default async function Page() {
     if (r.ok) walletPnl = await r.json();
   } catch {}
 
-  // ── Dexscreener (FIXED) ─────────────────────
+  // ── Dexscreener ─────────────────────────────
   let pairs: DexPair[] = [];
   try {
     const r = await fetch(
@@ -67,13 +69,14 @@ export default async function Page() {
       <div className="mx-auto max-w-6xl space-y-10">
 
         {/* HEADER */}
-        <header className="border border-ivg-border bg-ivg-card p-6 rounded-xl">
+        <header className="border border-ivg-border bg-ivg-card p-6 rounded-xl relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none scanline" />
           <div className="text-xs text-ivg-dim tracking-widest">INFINITE VOLUME GLITCH</div>
-          <div className="text-4xl font-bold">
+          <div className="text-4xl font-bold neon">
             <span className="text-ivg-neon">$IVG</span>{" "}
             <span className="text-ivg-cyan">ON-CHAIN TERMINAL</span>
           </div>
-          <div className="mt-2 text-sm text-ivg-dim">
+          <div className="mt-2 text-sm text-ivg-dim font-mono">
             mint: {mint.slice(0, 6)}…{mint.slice(-4)} | wallet: {wallet.slice(0, 6)}…{wallet.slice(-4)}
           </div>
         </header>
@@ -81,24 +84,29 @@ export default async function Page() {
         {/* STATS */}
         <section className="grid gap-6 md:grid-cols-3">
           <Panel title="Wallet PnL">
-            <Stat label="Total Invested" value={fmtUsd(walletPnl.summary?.totalInvested)} />
+            <Stat label="Total Invested" value={fmtUsd(walletPnl.summary?.totalInvested)} strong />
             <Stat label="Token Holding" value={fmtNum(mintRow?.holding, 4)} />
-            <Stat label="Current Value" value={fmtUsd(mintRow?.current_value)} />
+            <Stat label="Current Value" value={fmtUsd(mintRow?.current_value)} highlight />
           </Panel>
 
           <Panel title="Token Market" className="md:col-span-2">
             {!best ? (
-              <div className="text-ivg-dim">Awaiting liquidity signal…</div>
+              <div className="text-ivg-dim font-mono">Awaiting liquidity signal…</div>
             ) : (
               <>
                 <Stat label="DEX" value={best.dexId} />
-                <Stat label="Price" value={fmtUsd(Number(best.priceUsd))} />
+                <Stat
+                  label="Market Cap"
+                  value={fmtUsd(best.marketCap ?? best.fdv)}
+                  strong
+                  highlight
+                />
                 <Stat label="Liquidity" value={fmtUsd(best.liquidity?.usd)} />
                 <Stat label="24h Volume" value={fmtUsd(best.volume?.h24)} />
                 <a
                   href={best.url}
                   target="_blank"
-                  className="inline-block mt-4 text-ivg-neon hover:underline"
+                  className="inline-block mt-4 text-ivg-neon hover:underline font-mono neon"
                 >
                   View on Dexscreener →
                 </a>
@@ -133,18 +141,27 @@ export default async function Page() {
 
 function Panel({ title, children, className }: any) {
   return (
-    <div className={`border border-ivg-border bg-ivg-card p-6 rounded-xl ${className ?? ""}`}>
-      <div className="text-lg font-bold text-ivg-cyan mb-4">{title}</div>
+    <div className={`border border-ivg-border bg-ivg-card p-6 rounded-xl relative overflow-hidden ${className ?? ""}`}>
+      <div className="absolute inset-0 pointer-events-none scanline" />
+      <div className="text-lg font-bold text-ivg-cyan mb-4 neon">{title}</div>
       <div className="space-y-2">{children}</div>
     </div>
   );
 }
 
-function Stat({ label, value }: any) {
+function Stat({ label, value, strong, highlight }: any) {
   return (
-    <div className="flex justify-between text-sm">
+    <div className="flex justify-between items-baseline text-sm font-mono border-b border-ivg-border/40 pb-1">
       <span className="text-ivg-dim">{label}</span>
-      <span className="text-ivg-green font-semibold">{value}</span>
+      <span
+        className={[
+          "font-semibold",
+          strong ? "text-base" : "",
+          highlight ? "text-ivg-neon neon" : "text-ivg-green"
+        ].join(" ")}
+      >
+        {value}
+      </span>
     </div>
   );
 }
@@ -154,11 +171,12 @@ function Doc({ title, text, href }: any) {
     <a
       href={href}
       target="_blank"
-      className="border border-ivg-border bg-ivg-card p-6 rounded-xl hover:border-ivg-neon transition"
+      className="border border-ivg-border bg-ivg-card p-6 rounded-xl hover:border-ivg-neon transition relative overflow-hidden"
     >
-      <div className="text-ivg-neon font-bold">{title}</div>
-      <p className="mt-2 text-sm text-ivg-dim">{text}</p>
-      <div className="mt-4 text-ivg-cyan text-xs">Read docs →</div>
+      <div className="absolute inset-0 pointer-events-none scanline" />
+      <div className="text-ivg-neon font-bold neon">{title}</div>
+      <p className="mt-2 text-sm text-ivg-dim leading-relaxed">{text}</p>
+      <div className="mt-4 text-ivg-cyan text-xs font-mono">Read docs →</div>
     </a>
   );
 }

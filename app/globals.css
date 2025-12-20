@@ -1,27 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ===== IVG TERMINAL EFFECTS ===== */
 
-html, body {
-  background: #0b0f14;
-  color: #e5e7eb;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+.scanline {
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(57,255,20,0.04),
+    rgba(57,255,20,0.04) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
 }
 
-/* Matrix grid */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(34,211,238,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34,211,238,0.06) 1px, transparent 1px);
-  background-size: 32px 32px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-main {
-  position: relative;
-  z-index: 1;
+.neon {
+  text-shadow:
+    0 0 4px rgba(57,255,20,0.6),
+    0 0 12px rgba(57,255,20,0.35),
+    0 0 24px rgba(57,255,20,0.15);
 }
