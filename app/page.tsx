@@ -111,121 +111,6 @@ export default async function Page() {
               </span>
             </div>
           </div>
-          {/* IVG PROTOCOL OVERVIEW */}
-          <section className="panel p-8">
-            <div className="scanline" />
-            <div className="text-sm font-bold text-sky-400 neon mb-6">
-              [ ivg.protocol ]
-            </div>
-
-            <div className="space-y-6 text-sm text-slate-300 leading-relaxed">
-
-              <div>
-                <div className="text-cyan-300 font-semibold mb-2">
-                  What is IVG?
-                </div>
-                <p>
-                  IVG (Infinite Volume Glitch) is an autonomous on-chain execution and
-                  market-making system built for Solana.  
-                  Its goal is not to “pump” a token, but to maintain continuous market
-                  activity, controlled liquidity exposure, and predictable execution
-                  behavior over long periods of time.
-                </p>
-              </div>
-
-              <div>
-                <div className="text-cyan-300 font-semibold mb-2">
-                  How IVG Works
-                </div>
-                <p>
-                  IVG operates by monitoring token inventory, SOL exposure, liquidity
-                  depth, and execution timing.  
-                  Trades are split into small units, delayed in time, and only triggered
-                  when predefined imbalance thresholds are reached.
-                </p>
-                <p className="mt-2">
-                  This prevents sudden liquidity shocks, reduces sandwich risk, and keeps
-                  volume organic and distributed instead of concentrated in short bursts.
-                </p>
-              </div>
-
-              <div>
-                <div className="text-cyan-300 font-semibold mb-2">
-                  Execution Model
-                </div>
-                <p>
-                  Unlike traditional bots, IVG does not chase price.  
-                  It enforces a target SOL/token balance and uses execution constraints
-                  (rate limits, size caps, and cooldowns) to behave like a long-term market
-                  participant rather than a speculator.
-                </p>
-              </div>
-
-              <div>
-                <div className="text-cyan-300 font-semibold mb-2">
-                  Why This Is Sustainable
-                </div>
-                <p>
-                  Sustainable tokens are built on consistent liquidity, predictable
-                  execution, and confidence in market structure.  
-                  IVG reduces volatility extremes, avoids dead markets, and creates a
-                  smoother growth curve that attracts longer-term participants instead of
-                  short-term extractors.
-                </p>
-                <p className="mt-2">
-                  As IVG scales across multiple deployments, execution data, volume
-                  behavior, and liquidity patterns compound — turning IVG into
-                  infrastructure rather than a single-token experiment.
-                </p>
-              </div>
-
-            </div>
-          </section>
-
-          {/* IVG LINKS */}
-          <section className="panel p-6">
-            <div className="scanline" />
-            <div className="text-sm font-bold text-sky-400 neon mb-4">
-              [ ivg.links ]
-            </div>
-
-            <div className="space-y-3 text-sm font-mono">
-              <div>
-                <span className="text-slate-400">docs:</span>{" "}
-                <a
-                  href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/"
-                  target="_blank"
-                  className="text-cyan-300 hover:underline neon"
-                >
-                  gitbook.ivg
-                </a>
-              </div>
-
-              <div>
-                <span className="text-slate-400">dex:</span>{" "}
-                <a
-                  href={best?.url}
-                  target="_blank"
-                  className="text-cyan-300 hover:underline neon"
-                >
-                  dexscreener
-                </a>
-              </div>
-
-              <div>
-                <span className="text-slate-400">x:</span>{" "}
-                <a
-                  href="https://x.com/"
-                  target="_blank"
-                  className="text-cyan-300 hover:underline neon"
-                >
-                  @IVG
-                </a>
-              </div>
-            </div>
-          </section>
-
-
           {/* MARKET */}
           <div className="panel p-6 lg:col-span-2">
             <div className="scanline" />
@@ -276,6 +161,121 @@ export default async function Page() {
             )}
           </div>
         </section>
+
+
+        {/* IVG PROTOCOL OVERVIEW */}
+<section className="panel p-8">
+  <div className="scanline" />
+  <div className="text-sm font-bold text-sky-400 neon mb-6">
+    [ ivg.protocol ]
+  </div>
+
+  <div className="space-y-6 text-sm text-slate-300 leading-relaxed">
+
+    <div>
+      <div className="text-cyan-300 font-semibold mb-2">
+        What is IVG?
+      </div>
+      <p>
+        IVG (Infinite Volume Glitch) is an autonomous on-chain execution and
+        market-making system built for Solana.  
+        Its goal is not to “pump” a token, but to maintain continuous market
+        activity, controlled liquidity exposure, and predictable execution
+        behavior over long periods of time.
+      </p>
+    </div>
+
+    <div>
+      <div className="text-cyan-300 font-semibold mb-2">
+        How IVG Works
+      </div>
+      <p>
+        IVG operates by monitoring token inventory, SOL exposure, liquidity
+        depth, and execution timing.  
+        Trades are split into small units, delayed in time, and only triggered
+        when predefined imbalance thresholds are reached.
+      </p>
+      <p className="mt-2">
+        This prevents sudden liquidity shocks, reduces sandwich risk, and keeps
+        volume organic and distributed instead of concentrated in short bursts.
+      </p>
+    </div>
+
+    <div>
+      <div className="text-cyan-300 font-semibold mb-2">
+        Execution Model
+      </div>
+      <p>
+        Unlike traditional bots, IVG does not chase price.  
+        It enforces a target SOL/token balance and uses execution constraints
+        (rate limits, size caps, and cooldowns) to behave like a long-term market
+        participant rather than a speculator.
+      </p>
+    </div>
+
+    <div>
+      <div className="text-cyan-300 font-semibold mb-2">
+        Why This Is Sustainable
+      </div>
+      <p>
+        Sustainable tokens are built on consistent liquidity, predictable
+        execution, and confidence in market structure.  
+        IVG reduces volatility extremes, avoids dead markets, and creates a
+        smoother growth curve that attracts longer-term participants instead of
+        short-term extractors.
+      </p>
+      <p className="mt-2">
+        As IVG scales across multiple deployments, execution data, volume
+        behavior, and liquidity patterns compound — turning IVG into
+        infrastructure rather than a single-token experiment.
+      </p>
+    </div>
+
+  </div>
+</section>
+{/* IVG LINKS */}
+<section className="panel p-6">
+  <div className="scanline" />
+  <div className="text-sm font-bold text-sky-400 neon mb-4">
+    [ ivg.links ]
+  </div>
+
+  <div className="space-y-3 text-sm font-mono">
+    <div>
+      <span className="text-slate-400">docs:</span>{" "}
+      <a
+        href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/"
+        target="_blank"
+        className="text-cyan-300 hover:underline neon"
+      >
+        gitbook.ivg
+      </a>
+    </div>
+
+    <div>
+      <span className="text-slate-400">dex:</span>{" "}
+      <a
+        href={best?.url}
+        target="_blank"
+        className="text-cyan-300 hover:underline neon"
+      >
+        dexscreener
+      </a>
+    </div>
+
+    <div>
+      <span className="text-slate-400">x:</span>{" "}
+      <a
+        href="https://x.com/"
+        target="_blank"
+        className="text-cyan-300 hover:underline neon"
+      >
+        @IVG
+      </a>
+    </div>
+  </div>
+</section>
+
 
       </div>
     </main>
