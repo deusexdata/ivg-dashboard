@@ -15,12 +15,10 @@ type DexPair = {
   dexId?: string;
   url?: string;
   pairAddress?: string;
-  priceUsd?: string;
   marketCap?: number;
   fdv?: number;
   liquidity?: { usd?: number };
   volume?: { h24?: number };
-  txns?: { h24?: { buys?: number; sells?: number } };
 };
 
 const fmtUsd = (n?: number) =>
@@ -36,7 +34,6 @@ export default async function Page() {
   const wallet = process.env.IVG_WALLET!;
   const apiKey = process.env.SOLANA_TRACKER_API_KEY!;
 
-  // ── SolanaTracker ───────────────────────────
   let walletPnl: WalletPnl = {};
   try {
     const r = await fetch(`https://data.solanatracker.io/pnl/${wallet}`, {
@@ -46,7 +43,6 @@ export default async function Page() {
     if (r.ok) walletPnl = await r.json();
   } catch {}
 
-  // ── Dexscreener ─────────────────────────────
   let pairs: DexPair[] = [];
   try {
     const r = await fetch(
@@ -65,118 +61,99 @@ export default async function Page() {
     .sort((a, b) => b.liquidity!.usd! - a.liquidity!.usd!)[0];
 
   return (
-    <main className="min-h-screen px-6 py-12">
-      <div className="mx-auto max-w-6xl space-y-10">
+    <main className="relative z-10 min-h-screen px-8 py-14">
+      <div className="mx-auto max-w-7xl space-y-12">
 
         {/* HEADER */}
-        <header className="border border-ivg-border bg-ivg-card p-6 rounded-xl relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none scanline" />
-          <div className="text-xs text-ivg-dim tracking-widest">INFINITE VOLUME GLITCH</div>
-          <div className="text-4xl font-bold neon">
-            <span className="text-ivg-neon">$IVG</span>{" "}
-            <span className="text-ivg-cyan">ON-CHAIN TERMINAL</span>
+        <section className="panel p-8">
+          <div className="scanline" />
+          <div className="text-xs tracking-widest text-slate-400">
+            INFINITE VOLUME GLITCH
           </div>
-          <div className="mt-2 text-sm text-ivg-dim font-mono">
-            mint: {mint.slice(0, 6)}…{mint.slice(-4)} | wallet: {wallet.slice(0, 6)}…{wallet.slice(-4)}
+          <div className="mt-2 text-5xl font-bold neon">
+            <span className="text-[#39ff14]">$IVG</span>{" "}
+            <span className="text-[#22d3ee]">ON-CHAIN TERMINAL</span>
           </div>
-        </header>
+          <div className="mt-3 text-sm text-slate-400">
+            mint: {mint.slice(0, 6)}…{mint.slice(-4)} | wallet:{" "}
+            {wallet.slice(0, 6)}…{wallet.slice(-4)}
+          </div>
+        </section>
 
-        {/* STATS */}
-        <section className="grid gap-6 md:grid-cols-3">
-          <Panel title="Wallet PnL">
-            <Stat label="Total Invested" value={fmtUsd(walletPnl.summary?.totalInvested)} strong />
-            <Stat label="Token Holding" value={fmtNum(mintRow?.holding, 4)} />
-            <Stat label="Current Value" value={fmtUsd(mintRow?.current_value)} highlight />
-          </Panel>
+        {/* PANELS GRID */}
+        <section className="grid gap-8 lg:grid-cols-3">
 
-          <Panel title="Token Market" className="md:col-span-2">
+          {/* WALLET */}
+          <div className="panel p-6">
+            <div className="scanline" />
+            <div className="text-xl font-bold text-[#22d3ee] neon mb-4">
+              Wallet PnL
+            </div>
+
+            <div className="stat-row">
+              <span className="stat-label">Total Invested</span>
+              <span className="stat-value">{fmtUsd(walletPnl.summary?.totalInvested)}</span>
+            </div>
+
+            <div className="stat-row">
+              <span className="stat-label">Token Holding</span>
+              <span className="stat-value">{fmtNum(mintRow?.holding, 4)}</span>
+            </div>
+
+            <div className="stat-row">
+              <span className="stat-label">Current Value</span>
+              <span className="stat-value stat-highlight neon">
+                {fmtUsd(mintRow?.current_value)}
+              </span>
+            </div>
+          </div>
+
+          {/* MARKET */}
+          <div className="panel p-6 lg:col-span-2">
+            <div className="scanline" />
+            <div className="text-xl font-bold text-[#22d3ee] neon mb-4">
+              Token Market
+            </div>
+
             {!best ? (
-              <div className="text-ivg-dim font-mono">Awaiting liquidity signal…</div>
+              <div className="text-slate-400">Awaiting liquidity signal…</div>
             ) : (
               <>
-                <Stat label="DEX" value={best.dexId} />
-                <Stat
-                  label="Market Cap"
-                  value={fmtUsd(best.marketCap ?? best.fdv)}
-                  strong
-                  highlight
-                />
-                <Stat label="Liquidity" value={fmtUsd(best.liquidity?.usd)} />
-                <Stat label="24h Volume" value={fmtUsd(best.volume?.h24)} />
+                <div className="stat-row">
+                  <span className="stat-label">DEX</span>
+                  <span className="stat-value">{best.dexId}</span>
+                </div>
+
+                <div className="stat-row">
+                  <span className="stat-label">Market Cap</span>
+                  <span className="stat-value stat-highlight neon">
+                    {fmtUsd(best.marketCap ?? best.fdv)}
+                  </span>
+                </div>
+
+                <div className="stat-row">
+                  <span className="stat-label">Liquidity</span>
+                  <span className="stat-value">{fmtUsd(best.liquidity?.usd)}</span>
+                </div>
+
+                <div className="stat-row">
+                  <span className="stat-label">24h Volume</span>
+                  <span className="stat-value">{fmtUsd(best.volume?.h24)}</span>
+                </div>
+
                 <a
                   href={best.url}
                   target="_blank"
-                  className="inline-block mt-4 text-ivg-neon hover:underline font-mono neon"
+                  className="inline-block mt-6 text-[#39ff14] neon hover:underline"
                 >
                   View on Dexscreener →
                 </a>
               </>
             )}
-          </Panel>
-        </section>
-
-        {/* DOCS */}
-        <section className="grid gap-6 md:grid-cols-3">
-          <Doc
-            title="What is IVG?"
-            text="IVG is an autonomous, self-balancing on-chain execution system designed to operate continuously on Solana."
-            href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/"
-          />
-          <Doc
-            title="Market Maker Logic"
-            text="IVG maintains a target SOL/token balance, executing split, delayed trades only when imbalance thresholds are crossed."
-            href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/getting-started/quickstart"
-          />
-          <Doc
-            title="Architecture"
-            text="Built on Solana RPC + SolanaTracker data feeds with autonomous execution logic and strict exposure control."
-            href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/getting-started/publish-your-docs"
-          />
+          </div>
         </section>
 
       </div>
     </main>
-  );
-}
-
-function Panel({ title, children, className }: any) {
-  return (
-    <div className={`border border-ivg-border bg-ivg-card p-6 rounded-xl relative overflow-hidden ${className ?? ""}`}>
-      <div className="absolute inset-0 pointer-events-none scanline" />
-      <div className="text-lg font-bold text-ivg-cyan mb-4 neon">{title}</div>
-      <div className="space-y-2">{children}</div>
-    </div>
-  );
-}
-
-function Stat({ label, value, strong, highlight }: any) {
-  return (
-    <div className="flex justify-between items-baseline text-sm font-mono border-b border-ivg-border/40 pb-1">
-      <span className="text-ivg-dim">{label}</span>
-      <span
-        className={[
-          "font-semibold",
-          strong ? "text-base" : "",
-          highlight ? "text-ivg-neon neon" : "text-ivg-green"
-        ].join(" ")}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-function Doc({ title, text, href }: any) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      className="border border-ivg-border bg-ivg-card p-6 rounded-xl hover:border-ivg-neon transition relative overflow-hidden"
-    >
-      <div className="absolute inset-0 pointer-events-none scanline" />
-      <div className="text-ivg-neon font-bold neon">{title}</div>
-      <p className="mt-2 text-sm text-ivg-dim leading-relaxed">{text}</p>
-      <div className="mt-4 text-ivg-cyan text-xs font-mono">Read docs →</div>
-    </a>
   );
 }
