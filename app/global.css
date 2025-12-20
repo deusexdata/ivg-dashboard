@@ -2,24 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
-}
-
 html, body {
-  height: 100%;
   background: #0b0f14;
-}
-
-body {
   color: white;
-}
-
-/* subtle terminal grid */
-.ivg-grid {
-  background-image:
-    linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 36px 36px;
-  background-position: center;
 }
