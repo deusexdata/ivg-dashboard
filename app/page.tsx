@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 type WalletPnl = {
   tokens?: Record<string, any>;
   summary?: {
