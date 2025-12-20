@@ -28,7 +28,16 @@ const fmtUsd = (n?: number) =>
 
 const fmtNum = (n?: number, d = 2) =>
   typeof n === "number" ? n.toFixed(d) : "—";
+const fmtCompact = (n?: number, digits = 2) => {
+  if (typeof n !== "number" || !isFinite(n)) return "—";
 
+  const abs = Math.abs(n);
+  if (abs >= 1e9) return `${(n / 1e9).toFixed(digits)}B`;
+  if (abs >= 1e6) return `${(n / 1e6).toFixed(digits)}M`;
+  if (abs >= 1e3) return `${(n / 1e3).toFixed(digits)}K`;
+
+  return n.toFixed(digits);
+};
 export default async function Page() {
   const mint = process.env.IVG_MINT!;
   const wallet = process.env.IVG_WALLET!;
@@ -97,12 +106,12 @@ export default async function Page() {
     </span>
   </div>
 
-  <div className="stat-row">
-    <span className="stat-label">token_holding</span>
-    <span className="stat-value">
-      {fmtNum(mintRow?.holding, 4)}
-    </span>
-  </div>
+<div className="stat-row">
+  <span className="stat-label">token_holding</span>
+  <span className="stat-value">
+    {fmtCompact(mintRow?.holding, 2)}
+  </span>
+</div>
 
   <div className="stat-row">
     <span className="stat-label">current_value</span>
@@ -289,7 +298,7 @@ export default async function Page() {
     <div>
       <span className="text-slate-400">x:</span>{" "}
       <a
-        href="https://x.com/"
+        href="https://x.com/i/communities/2002093610800722308"
         target="_blank"
         className="text-cyan-300 hover:underline neon"
       >
