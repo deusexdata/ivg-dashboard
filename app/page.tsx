@@ -111,6 +111,28 @@ export default async function Page() {
               </span>
             </div>
           </div>
+            {/* EXECUTION COUNTERS */}
+  <div className="stat-row">
+    <span className="stat-label">buy_transactions</span>
+    <span className="stat-value">
+      {fmtNum(mintRow?.buy_transactions, 0)}
+    </span>
+  </div>
+
+  <div className="stat-row">
+    <span className="stat-label">sell_transactions</span>
+    <span className="stat-value">
+      {fmtNum(mintRow?.sell_transactions, 0)}
+    </span>
+  </div>
+
+  <div className="stat-row">
+    <span className="stat-label">total_transactions</span>
+    <span className="stat-value stat-highlight neon">
+      {fmtNum(mintRow?.total_transactions, 0)}
+    </span>
+  </div>
+</div>
           {/* MARKET */}
           <div className="panel p-6 lg:col-span-2">
             <div className="scanline" />
