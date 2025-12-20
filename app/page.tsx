@@ -9,7 +9,6 @@ type WalletPnl = {
     total?: number;
     winPercentage?: number;
   };
-  pnl_since?: number;
 };
 
 type DexPair = {
@@ -24,47 +23,28 @@ type DexPair = {
   txns?: { h24?: { buys?: number; sells?: number } };
 };
 
-function fmtUsd(n?: number) {
-  if (typeof n !== "number" || !isFinite(n)) return "—";
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
-}
+const fmtUsd = (n?: number) =>
+  typeof n === "number" ? `$${n.toLocaleString(undefined, { maximumFractionDigits: 2 })}` : "—";
 
-function fmtNum(n?: number, digits = 2) {
-  if (typeof n !== "number" || !isFinite(n)) return "—";
-  return n.toFixed(digits);
-}
+const fmtNum = (n?: number, d = 2) =>
+  typeof n === "number" ? n.toFixed(d) : "—";
 
 export default async function Page() {
-  const mint = process.env.IVG_MINT;
-  const wallet = process.env.IVG_WALLET;
-  const apiKey = process.env.SOLANA_TRACKER_API_KEY;
+  const mint = process.env.IVG_MINT!;
+  const wallet = process.env.IVG_WALLET!;
+  const apiKey = process.env.SOLANA_TRACKER_API_KEY!;
 
-  if (!mint || !wallet || !apiKey) {
-    return (
-      <pre style={{ color: "red", padding: 20 }}>
-        ENV VAR MISSING
-        {"\n"}IVG_MINT={String(mint)}
-        {"\n"}IVG_WALLET={String(wallet)}
-        {"\n"}SOLANA_TRACKER_API_KEY={apiKey ? "SET" : "MISSING"}
-      </pre>
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  // Fetch SolanaTracker (SAFE)
-  // ─────────────────────────────────────────────
+  // ── SolanaTracker ───────────────────────────
   let walletPnl: WalletPnl = {};
   try {
-    const r = await fetch(
-      `https://data.solanatracker.io/pnl/${wallet}`,
-      { headers: { "x-api-key": apiKey }, cache: "no-store" }
-    );
+    const r = await fetch(`https://data.solanatracker.io/pnl/${wallet}`, {
+      headers: { "x-api-key": apiKey },
+      cache: "no-store"
+    });
     if (r.ok) walletPnl = await r.json();
   } catch {}
 
-  // ─────────────────────────────────────────────
-  // Fetch Dexscreener (SAFE)
-  // ─────────────────────────────────────────────
+  // ── Dexscreener (FIXED) ─────────────────────
   let pairs: DexPair[] = [];
   try {
     const r = await fetch(
@@ -73,45 +53,77 @@ export default async function Page() {
     );
     if (r.ok) {
       const j = await r.json();
-      if (Array.isArray(j?.pairs)) pairs = j.pairs;
+      if (Array.isArray(j)) pairs = j;
     }
   } catch {}
 
   const mintRow = walletPnl.tokens?.[mint];
   const best = pairs
     .filter(p => typeof p.liquidity?.usd === "number")
-    .sort((a, b) => (b.liquidity!.usd! - a.liquidity!.usd!))[0];
+    .sort((a, b) => b.liquidity!.usd! - a.liquidity!.usd!)[0];
 
   return (
-    <main className="min-h-screen px-6 py-10">
-      <div className="mx-auto max-w-6xl space-y-6">
+    <main className="min-h-screen px-6 py-12">
+      <div className="mx-auto max-w-6xl space-y-10">
 
-        <section className="rounded-2xl border border-ivg-border bg-ivg-card p-6">
-          <div className="text-xs text-ivg-dim">INFINITE VOLUME GLITCH</div>
-          <div className="text-3xl font-semibold">
+        {/* HEADER */}
+        <header className="border border-ivg-border bg-ivg-card p-6 rounded-xl">
+          <div className="text-xs text-ivg-dim tracking-widest">INFINITE VOLUME GLITCH</div>
+          <div className="text-4xl font-bold">
             <span className="text-ivg-neon">$IVG</span>{" "}
-            <span className="text-ivg-cyan">Dashboard</span>
+            <span className="text-ivg-cyan">ON-CHAIN TERMINAL</span>
           </div>
-        </section>
+          <div className="mt-2 text-sm text-ivg-dim">
+            mint: {mint.slice(0, 6)}…{mint.slice(-4)} | wallet: {wallet.slice(0, 6)}…{wallet.slice(-4)}
+          </div>
+        </header>
 
+        {/* STATS */}
         <section className="grid gap-6 md:grid-cols-3">
           <Panel title="Wallet PnL">
-            <Row label="Total Invested" value={fmtUsd(walletPnl.summary?.totalInvested)} />
-            <Row label="Holding" value={fmtNum(mintRow?.holding, 4)} />
-            <Row label="Current Value" value={fmtUsd(mintRow?.current_value)} />
+            <Stat label="Total Invested" value={fmtUsd(walletPnl.summary?.totalInvested)} />
+            <Stat label="Token Holding" value={fmtNum(mintRow?.holding, 4)} />
+            <Stat label="Current Value" value={fmtUsd(mintRow?.current_value)} />
           </Panel>
 
           <Panel title="Token Market" className="md:col-span-2">
             {!best ? (
-              <div className="text-sm text-ivg-dim">No market data available</div>
+              <div className="text-ivg-dim">Awaiting liquidity signal…</div>
             ) : (
               <>
-                <Row label="DEX" value={best.dexId} />
-                <Row label="Price" value={fmtUsd(Number(best.priceUsd))} />
-                <Row label="Liquidity" value={fmtUsd(best.liquidity?.usd)} />
+                <Stat label="DEX" value={best.dexId} />
+                <Stat label="Price" value={fmtUsd(Number(best.priceUsd))} />
+                <Stat label="Liquidity" value={fmtUsd(best.liquidity?.usd)} />
+                <Stat label="24h Volume" value={fmtUsd(best.volume?.h24)} />
+                <a
+                  href={best.url}
+                  target="_blank"
+                  className="inline-block mt-4 text-ivg-neon hover:underline"
+                >
+                  View on Dexscreener →
+                </a>
               </>
             )}
           </Panel>
+        </section>
+
+        {/* DOCS */}
+        <section className="grid gap-6 md:grid-cols-3">
+          <Doc
+            title="What is IVG?"
+            text="IVG is an autonomous, self-balancing on-chain execution system designed to operate continuously on Solana."
+            href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/"
+          />
+          <Doc
+            title="Market Maker Logic"
+            text="IVG maintains a target SOL/token balance, executing split, delayed trades only when imbalance thresholds are crossed."
+            href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/getting-started/quickstart"
+          />
+          <Doc
+            title="Architecture"
+            text="Built on Solana RPC + SolanaTracker data feeds with autonomous execution logic and strict exposure control."
+            href="https://ivg-infinite-volume-glitch.gitbook.io/usdivg-infinite-volume-glitch/getting-started/publish-your-docs"
+          />
         </section>
 
       </div>
@@ -121,18 +133,32 @@ export default async function Page() {
 
 function Panel({ title, children, className }: any) {
   return (
-    <section className={`rounded-2xl border border-ivg-border bg-ivg-card p-6 ${className ?? ""}`}>
-      <div className="text-lg font-semibold text-ivg-cyan">{title}</div>
-      <div className="mt-4 space-y-2">{children}</div>
-    </section>
+    <div className={`border border-ivg-border bg-ivg-card p-6 rounded-xl ${className ?? ""}`}>
+      <div className="text-lg font-bold text-ivg-cyan mb-4">{title}</div>
+      <div className="space-y-2">{children}</div>
+    </div>
   );
 }
 
-function Row({ label, value }: any) {
+function Stat({ label, value }: any) {
   return (
     <div className="flex justify-between text-sm">
       <span className="text-ivg-dim">{label}</span>
-      <span>{value ?? "—"}</span>
+      <span className="text-ivg-green font-semibold">{value}</span>
     </div>
+  );
+}
+
+function Doc({ title, text, href }: any) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      className="border border-ivg-border bg-ivg-card p-6 rounded-xl hover:border-ivg-neon transition"
+    >
+      <div className="text-ivg-neon font-bold">{title}</div>
+      <p className="mt-2 text-sm text-ivg-dim">{text}</p>
+      <div className="mt-4 text-ivg-cyan text-xs">Read docs →</div>
+    </a>
   );
 }
