@@ -97,3 +97,53 @@ body::before {
 .stat-highlight {
   color: #39ff14;
 }
+
+/* ================================
+   TERMINAL UX ENHANCEMENTS
+================================ */
+
+.terminal {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.02em;
+}
+
+.prompt::before {
+  content: "> ";
+  color: #39ff14;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(34,211,238,0.4),
+    transparent
+  );
+  margin: 12px 0;
+}
+
+/* Click-to-copy */
+.copy {
+  cursor: pointer;
+  position: relative;
+}
+
+.copy:hover {
+  color: #39ff14;
+}
+
+.copy::after {
+  content: "copied";
+  position: absolute;
+  right: -48px;
+  top: 0;
+  font-size: 10px;
+  color: #39ff14;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.copy:active::after {
+  opacity: 1;
+}
