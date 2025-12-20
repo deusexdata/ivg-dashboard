@@ -83,35 +83,35 @@ export default async function Page() {
         {/* TERMINAL PANELS */}
         <section className="grid gap-8 lg:grid-cols-3">
 
-          {/* WALLET */}
-          <div className="panel p-6">
-            <div className="scanline" />
-            <div className="text-sm font-bold text-sky-400 neon mb-4">
-              [ wallet.pnl ]
-            </div>
+{/* WALLET */}
+<div className="panel p-6">
+  <div className="scanline" />
+  <div className="text-sm font-bold text-sky-400 neon mb-4">
+    [ wallet.pnl ]
+  </div>
 
-            <div className="stat-row">
-              <span className="stat-label">total_invested</span>
-              <span className="stat-value">
-                {fmtUsd(walletPnl.summary?.totalInvested)}
-              </span>
-            </div>
+  <div className="stat-row">
+    <span className="stat-label">total_invested</span>
+    <span className="stat-value">
+      {fmtUsd(walletPnl.summary?.totalInvested)}
+    </span>
+  </div>
 
-            <div className="stat-row">
-              <span className="stat-label">token_holding</span>
-              <span className="stat-value">
-                {fmtNum(mintRow?.holding, 4)}
-              </span>
-            </div>
+  <div className="stat-row">
+    <span className="stat-label">token_holding</span>
+    <span className="stat-value">
+      {fmtNum(mintRow?.holding, 4)}
+    </span>
+  </div>
 
-            <div className="stat-row">
-              <span className="stat-label">current_value</span>
-              <span className="stat-value stat-highlight neon">
-                {fmtUsd(mintRow?.current_value)}
-              </span>
-            </div>
-          </div>
-            {/* EXECUTION COUNTERS */}
+  <div className="stat-row">
+    <span className="stat-label">current_value</span>
+    <span className="stat-value stat-highlight neon">
+      {fmtUsd(mintRow?.current_value)}
+    </span>
+  </div>
+
+  {/* EXECUTION COUNTERS */}
   <div className="stat-row">
     <span className="stat-label">buy_transactions</span>
     <span className="stat-value">
@@ -133,6 +133,7 @@ export default async function Page() {
     </span>
   </div>
 </div>
+
           {/* MARKET */}
           <div className="panel p-6 lg:col-span-2">
             <div className="scanline" />
