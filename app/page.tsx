@@ -1,4 +1,8 @@
+import Link from "next/link";
+
 export const dynamic = "force-dynamic";
+
+const TELEGRAM_BOT_URL = "https://t.me/IVG_AUTH_BOT";
 
 type WalletPnl = {
   tokens?: Record<string, any>;
@@ -86,6 +90,32 @@ export default async function Page() {
           <div className="mt-3 text-sm text-slate-400">
             mint: {mint.slice(0, 6)}…{mint.slice(-4)} | wallet:{" "}
             {wallet.slice(0, 6)}…{wallet.slice(-4)}
+          </div>
+
+          {/* QUICK NAV */}
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={TELEGRAM_BOT_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-md border border-cyan-400/50 bg-slate-900/50 px-4 py-2 text-sm text-cyan-200 hover:border-cyan-300 hover:bg-slate-900 transition"
+            >
+              open_telegram_bot →
+            </a>
+
+            <Link
+              href="/bot"
+              className="inline-flex items-center gap-2 rounded-md border border-sky-400/50 bg-slate-900/50 px-4 py-2 text-sm text-sky-200 hover:border-sky-300 hover:bg-slate-900 transition"
+            >
+              read_bot_modules →
+            </Link>
+
+            <Link
+              href="/dev-tools"
+              className="inline-flex items-center gap-2 rounded-md border border-slate-400/40 bg-slate-900/50 px-4 py-2 text-sm text-slate-200 hover:border-slate-300 hover:bg-slate-900 transition"
+            >
+              dev_tools_overview →
+            </Link>
           </div>
         </section>
 
@@ -195,6 +225,58 @@ export default async function Page() {
         </section>
 
 
+        {/* TELEGRAM BOT MODULES */}
+        <section className="panel p-8">
+          <div className="scanline" />
+          <div className="text-sm font-bold text-sky-400 neon mb-6">
+            [ telegram.modules ]
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3 text-sm text-slate-300 leading-relaxed">
+            <div className="rounded-md border border-cyan-400/20 bg-slate-950/30 p-5">
+              <div className="text-cyan-300 font-semibold mb-2">AutoBurn</div>
+              <div className="text-slate-300">
+                Scheduled creator-fee claims, treasury preservation, buybacks
+                with excess SOL, and 100% burn of acquired tokens.
+              </div>
+            </div>
+
+            <div className="rounded-md border border-cyan-400/20 bg-slate-950/30 p-5">
+              <div className="text-cyan-300 font-semibold mb-2">Market Maker</div>
+              <div className="text-slate-300">
+                Real-time gRPC price feed + inventory-based execution using
+                target bands to maintain organic flow and long-horizon behavior.
+              </div>
+            </div>
+
+            <div className="rounded-md border border-cyan-400/20 bg-slate-950/30 p-5">
+              <div className="text-cyan-300 font-semibold mb-2">Dev Tools</div>
+              <div className="text-slate-300">
+                Separate operator workspace (Claim, Buy &amp; Burn, Airdrop modules
+                and more coming).
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={TELEGRAM_BOT_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-md border border-cyan-400/50 bg-slate-900/50 px-4 py-2 text-sm text-cyan-200 hover:border-cyan-300 hover:bg-slate-900 transition"
+            >
+              open_telegram_bot →
+            </a>
+            <Link
+              href="/bot"
+              className="inline-flex items-center gap-2 rounded-md border border-sky-400/50 bg-slate-900/50 px-4 py-2 text-sm text-sky-200 hover:border-sky-300 hover:bg-slate-900 transition"
+            >
+              read_full_bot_overview →
+            </Link>
+          </div>
+        </section>
+
+
         {/* IVG PROTOCOL OVERVIEW */}
 <section className="panel p-8">
   <div className="scanline" />
@@ -287,12 +369,37 @@ export default async function Page() {
     <div>
       <span className="text-slate-400">dex:</span>{" "}
       <a
-        href={best?.url}
+        href={best?.url ?? `https://dexscreener.com/solana/${mint}`}
         target="_blank"
         className="text-cyan-300 hover:underline neon"
       >
         dexscreener
       </a>
+    </div>
+
+    <div>
+      <span className="text-slate-400">telegram:</span>{" "}
+      <a
+        href={TELEGRAM_BOT_URL}
+        target="_blank"
+        className="text-cyan-300 hover:underline neon"
+      >
+        @IVG_AUTH_BOT
+      </a>
+    </div>
+
+    <div>
+      <span className="text-slate-400">bot:</span>{" "}
+      <Link href="/bot" className="text-cyan-300 hover:underline neon">
+        modules_overview
+      </Link>
+    </div>
+
+    <div>
+      <span className="text-slate-400">dev_tools:</span>{" "}
+      <Link href="/dev-tools" className="text-cyan-300 hover:underline neon">
+        operator_workspace
+      </Link>
     </div>
 
     <div>
