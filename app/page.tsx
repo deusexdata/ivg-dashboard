@@ -4,6 +4,81 @@ export const dynamic = "force-dynamic";
 
 const TELEGRAM_BOT_URL = "https://t.me/IVG_AUTH_BOT";
 
+// Solana token program IDs (legacy SPL + Token-2022)
+const TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+const TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
+
+type RpcResp<T> = { jsonrpc: "2.0"; id: number; result?: T; error?: any };
+
+async function rpcCall<T>(rpcUrl: string, method: string, params: any[]): Promise<T> {
+  const res = await fetch(rpcUrl, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+    // Allow Next to cache lightly if you later switch away from force-dynamic.
+    cache: "no-store"
+  });
+
+  const data = (await res.json()) as RpcResp<T>;
+  if (!res.ok || data.error) {
+    throw new Error(
+      `RPC ${method} failed: ${data.error?.message ?? res.statusText}`
+    );
+  }
+  if (data.result === undefined) throw new Error(`RPC ${method} returned no result`);
+  return data.result;
+}
+
+function formatUiAmount(raw: bigint, decimals: number): string {
+  if (decimals <= 0) return raw.toString();
+  const s = raw.toString().padStart(decimals + 1, "0");
+  const i = s.slice(0, -decimals);
+  const f = s.slice(-decimals).replace(/0+$/, "");
+  return f ? `${i}.${f}` : i;
+}
+
+async function getOnchainTokenHolding(opts: {
+  rpcUrl: string;
+  owner: string;
+  mint: string;
+}): Promise<{ raw: bigint; decimals: number; uiString: string; uiNumber: number }>
+{
+  // Query both programs and sum any accounts for the mint.
+  const fetchByProgram = async (programId: string) =>
+    rpcCall<any>(opts.rpcUrl, "getTokenAccountsByOwner", [
+      opts.owner,
+      { programId },
+      { encoding: "jsonParsed" }
+    ]);
+
+  const [legacy, t22] = await Promise.all([
+    fetchByProgram(TOKEN_PROGRAM_ID).catch(() => null),
+    fetchByProgram(TOKEN_2022_PROGRAM_ID).catch(() => null)
+  ]);
+
+  const values: any[] = [
+    ...(legacy?.value ?? []),
+    ...(t22?.value ?? [])
+  ];
+
+  let raw = 0n;
+  let decimals = 0;
+
+  for (const v of values) {
+    const info = v?.account?.data?.parsed?.info;
+    if (!info || info.mint !== opts.mint) continue;
+    const amountStr = info?.tokenAmount?.amount;
+    const dec = info?.tokenAmount?.decimals;
+    if (typeof amountStr !== "string" || typeof dec !== "number") continue;
+    raw += BigInt(amountStr);
+    decimals = dec; // same across accounts for a mint
+  }
+
+  const uiString = formatUiAmount(raw, decimals);
+  const uiNumber = Number.parseFloat(uiString);
+  return { raw, decimals, uiString, uiNumber };
+}
+
 type WalletPnl = {
   tokens?: Record<string, any>;
   summary?: {
@@ -46,6 +121,7 @@ export default async function Page() {
   const mint = process.env.IVG_MINT!;
   const wallet = process.env.IVG_WALLET!;
   const apiKey = process.env.SOLANA_TRACKER_API_KEY!;
+  const rpcUrl = process.env.RPC_URL ?? "https://mainnet.helius-rpc.com/?api-key=eb6ac1f9-c70a-4d76-bc04-5fb3e38fd84f";
 
   let walletPnl: WalletPnl = {};
   try {
@@ -72,6 +148,17 @@ export default async function Page() {
   const best = pairs
     .filter(p => typeof p.liquidity?.usd === "number")
     .sort((a, b) => b.liquidity!.usd! - a.liquidity!.usd!)[0];
+
+  // IMPORTANT: SolanaTracker PnL "holding" is an accounting metric (buys - sells)
+  // and can be wrong when tokens are burned or transferred. For the true balance,
+  // pull the on-chain SPL token accounts for this wallet + mint.
+  let onchainHoldingUi: number | undefined;
+  try {
+    const h = await getOnchainTokenHolding({ rpcUrl, owner: wallet, mint });
+    onchainHoldingUi = h.uiNumber;
+  } catch {
+    onchainHoldingUi = undefined;
+  }
 
   return (
     <main className="relative z-10 min-h-screen px-8 py-14">
@@ -139,7 +226,7 @@ export default async function Page() {
 <div className="stat-row">
   <span className="stat-label">token_holding</span>
   <span className="stat-value">
-    {fmtCompact(mintRow?.holding, 2)}
+    {fmtCompact(onchainHoldingUi, 2)}
   </span>
 </div>
 
